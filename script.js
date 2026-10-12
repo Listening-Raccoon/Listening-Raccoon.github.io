@@ -102,7 +102,31 @@ const currencies = new Map([
 	],
 ]);
 
+let timer;
+let timeLeft = 60 * 5;
+
 ////////////////////////////////////////////////////////////////////////////////
+
+const displayTimer = function () {
+	timeLeft--;
+	constroller(timeLeft);
+};
+
+const constroller = function (time) {
+	if (time <= 0) {
+		labelWelcome.textContent = `Log in to get started`;
+		currentUser = undefined;
+		clearInterval(timer);
+		timer = undefined;
+		toggleApp();
+		return;
+	}
+
+	const minutes = Math.floor(timeLeft / 60);
+	const seconds = timeLeft - minutes * 60;
+
+	labelTimer.textContent = `${String(minutes).padStart(2, 0)}:${String(seconds).padStart(2, 0)}`;
+};
 
 const validateLogin = function (user, pin) {
 	let validLogin = false;
@@ -204,6 +228,10 @@ btnLogin.addEventListener("click", (event) => {
 		toggleApp();
 		inputLoginUsername.value = "";
 		inputLoginPin.value = "";
+
+		if (!timer) {
+			timer = setInterval(displayTimer, 1000);
+		}
 	} else {
 		alert("Either User or PIN are incorect");
 	}
@@ -213,6 +241,8 @@ btnLogout.addEventListener("click", (event) => {
 	event.preventDefault();
 	labelWelcome.textContent = `Log in to get started`;
 	currentUser = undefined;
+	clearInterval(timer);
+	timer = undefined;
 	toggleApp();
 });
 
